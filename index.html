@@ -219,7 +219,8 @@
     </div>
 </div>
 
-<div class="wrap" id="app-content">
+<!--   (  ) -->
+<div class="wrap hidden" id="app-content">
   <div class="logo-header">
       <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo">
   </div>
@@ -479,7 +480,6 @@ async function showAdTunnel(onComplete) {
         });
         let ads = await res.json();
         
-        //        
         if (!ads || ads.length === 0) {
             if(onComplete) onComplete();
             return;
@@ -588,11 +588,9 @@ async function showAdTunnel(onComplete) {
 
     } catch (err) {
         console.error("Ad Tunnel Error:", err);
-        //           
         if(onComplete) onComplete();
     }
 }
-
 
 /* =====    ===== */
 function checkIsVIP() {
@@ -695,7 +693,6 @@ async function init() {
     
     document.getElementById("login-screen").classList.add("hidden");
 
-    //        ( )     
     showAdTunnel(async () => {
         try {
             const { data: profile } = await client.from("profiles").select("*").eq("ola_id", OLA_ID).single();
@@ -1201,10 +1198,14 @@ function switchTab(tab) {
     if(tab === 'profile') updateProfileUI();
 }
 
-//         
 window.onload = function() {
     if(localStorage.getItem("ola_id")) {
         init();
+    } else {
+        //              
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("app-content").classList.add("hidden");
+        document.getElementById("bottom-nav").classList.add("hidden");
     }
 };
 </script>
