@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>للذاكرين والذاكرات OLA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- استدعاء الخطوط بطريقة آمنة وسريعة لمنع اختفاء النص -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg-top: #e8f5e9; 
+    --bg-bottom: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #1b5e20; 
+    --gold: #d4af37;
+    --gold-light: #fef0c1;
+    --accent: #4caf50;
+    --danger: #e53935;
+    --shadow: 0 8px 32px rgba(27, 94, 32, 0.1);
+  }
+
+  * { box-sizing: border-box; }
+  
+  body { 
+    margin: 0; 
+    /* إضافة خطوط بديلة لضمان ظهور النص دائماً */
+    font-family: 'Tajawal', Arial, system-ui, Tahoma, sans-serif;
+    background: linear-gradient(135deg, var(--bg-top), var(--bg-bottom));
+    background-attachment: fixed;
+    color: var(--text-main); 
+    padding-bottom: 80px;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/arabesque.png');
+    opacity: 0.05;
+    z-index: -1;
+  }
+
+  .wrap { max-width: 800px; margin: 24px auto; padding: 12px; }
+  
+  .card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--gold); 
+    border-radius: 20px; 
+    padding: 24px; 
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  h2, h3 { color: var(--text-main); font-family: 'Amiri', 'Times New Roman', serif; margin-top: 0; }
+  
+  button { 
+    width: 100%; padding: 14px; border-radius: 12px; 
+    border: 1px solid var(--gold); background: var(--gold); 
+    color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; 
+    font-family: 'Tajawal', Arial, sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.outline { background: transparent; color: var(--gold); border-color: var(--gold); text-shadow: none; }
+  button.danger { background: transparent; color: var(--danger); border-color: var(--danger); text-shadow: none;}
+  
+  .dhikr-btn { 
+    background: #ffffff; border: 1px solid rgba(212, 175, 55, 0.5); color: var(--text-main); 
+    text-align: right; display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 12px; padding: 16px; font-size: 18px; line-height: 1.6; 
+    border-radius: 16px; font-family: 'Amiri', 'Times New Roman', serif; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: 0.2s;
+  }
+  .dhikr-btn:active { background: var(--gold-light); border-color: var(--gold); }
+  
+  .counter-badge { 
+    background: var(--gold); color: #fff; padding: 6px 14px; border-radius: 12px; 
+    font-weight: bold; font-size: 18px; font-family: Tahoma, sans-serif;
+    direction: ltr; display: inline-block;
+  }
+  
+  .hidden { display: none !important; }
+  
+  .oath-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,255,255,0.95); z-index: 1000;
+    display: flex; justify-content: center; align-items: center; padding: 20px;
+  }
+  .oath-box {
+    background: #fff; border: 2px solid var(--gold); border-radius: 24px;
+    padding: 30px; text-align: center; max-width: 500px; box-shadow: 0 20px 50px rgba(27, 94, 32, 0.2);
+  }
+
+  .bottom-nav { 
+    position: fixed; bottom: 0; left: 0; width: 100%; 
+    background: #ffffff; border-top: 1px solid var(--gold-light); 
+    display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  }
+  .nav-item { 
+    color: #81c784; background: transparent; border: none; padding: 6px; 
+    width: auto; font-size: 14px; flex: 1; text-align: center; text-shadow: none;
+  }
+  .nav-item.active { color: var(--text-main); font-weight: bold; border-bottom: 3px solid var(--gold); border-radius:0; }
+  
+  .rank-item, .session-item { 
+    display: flex; justify-content: space-between; padding: 16px; 
+    border-bottom: 1px dashed rgba(212, 175, 55, 0.3); align-items: center;
+    border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.5);
+  }
+  .rank-item.is-me { background: rgba(76, 175, 80, 0.15); border: 1px solid var(--accent); }
+  .rank-num { font-size: 22px; font-weight: bold; color: var(--gold); width: 30px; text-align: center; direction: ltr; font-family: Tahoma, sans-serif; }
+  
+  input, select {
+    width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--gold); 
+    background: #fff; color: var(--text-main); margin-bottom: 15px; font-size: 16px; font-family: 'Tajawal', Arial, sans-serif;
+  }
+  
+  .ramadan-banner {
+    background: linear-gradient(45deg, var(--gold), #e8c456); color: #07224e;
+    padding: 18px; border-radius: 16px; margin-bottom: 20px; text-align: center;
+    font-weight: bold; font-size: 16px; line-height: 1.6; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  }
+  
+  .en-num { direction: ltr; display: inline-block; font-family: Tahoma, sans-serif; }
+
+  .quran-verse {
+      text-align: center; margin-bottom: 20px; font-family: 'Amiri', 'Times New Roman', serif;
+      background: var(--card-bg); padding: 20px 15px; border-radius: 16px;
+      border: 1px dashed var(--gold); box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  }
+
+  .logo-header {
+      text-align: center; margin-bottom: 20px;
+  }
+  .logo-header img {
+      max-width: 140px; border-radius: 12px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  }
+  
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .banner-sec { background: var(--bg-top); border: 1px dashed var(--gold); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: right; }
+  @media (max-width: 500px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- شاشة تسجيل الدخول -->
+<div id="login-screen" class="wrap hidden" style="text-align:center; padding-top: 50px;">
+    <div class="card" style="max-width: 400px; margin: auto;">
+        <div class="logo-header">
+            <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo">
+        </div>
+        <h3 style="color:var(--gold); font-size:28px; margin-bottom: 10px;">تسجيل الدخول</h3>
+        <p style="margin-bottom:25px; color:var(--text-main); font-size: 16px;">الرجاء إدخال رقم الحساب وكلمة المرور للبدء</p>
+        <input type="text" id="login-ola-id" placeholder="مثال: OLA 471264597-201" style="text-align:center; direction:ltr; font-weight:bold; letter-spacing: 1px;">
+        <input type="password" id="login-password" placeholder="كلمة المرور" style="text-align:center; direction:ltr; font-weight:bold; letter-spacing: 1px;">
+        
+        <button id="btn-login" onclick="loginUser()" style="margin-top: 10px; font-size: 18px;">تسجيل الدخول</button>
+        <button id="btn-go-register" class="outline" onclick="showRegisterScreen()" style="margin-top: 15px; font-size: 16px;">إنشاء حساب جديد</button>
+    </div>
+</div>
+
+<!-- شاشة إنشاء حساب جديد -->
+<div id="register-screen" class="wrap hidden" style="text-align:center; padding-top: 20px;">
+    <div class="card" style="max-width: 600px; margin: auto; text-align: right;">
+        <div class="logo-header" style="text-align:center;">
+            <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo" style="max-width: 100px;">
+        </div>
+        <h3 style="color:var(--gold); font-size:26px; margin-bottom: 15px; text-align:center;">إنشاء حساب جديد</h3>
+        
+        <div class="grid2">
+            <input id="reg-name" placeholder="الاسم الكامل"/>
+            <input id="reg-dob" placeholder="تاريخ الميلاد (مثال 1/1/2000)"/>
+            <input id="reg-country" placeholder="البلد"/>
+            <input id="reg-city" placeholder="المدينة"/>
+            <input id="reg-job" placeholder="المهنة"/>
+            <select id="reg-gender">
+                <option value="" disabled selected>اختر الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+            <input id="reg-pass" type="password" placeholder="قم بإنشاء كلمة سر قوية"/>
+            <input id="reg-pass-confirm" type="password" placeholder="تأكيد كلمة السر"/>
+        </div>
+
+        <div class="banner-sec">
+            <h4 style="margin:0 0 8px 0; color:var(--text-main);">سؤال الأمان الإلزامي</h4>
+            <div style="font-size: 13px; margin-bottom:8px; color:#555;">سيفيدك هذا السؤال في استعادة الحساب لاحقاً.</div>
+            <div style="font-weight:bold; margin-bottom:8px; color:var(--danger); font-size:16px;" id="reg-sec-q">جاري توليد سؤال أمان...</div>
+            <input id="reg-sec-a" placeholder="أدخل إجابتك هنا بوضوح" style="margin-bottom:0;">
+        </div>
+
+        <div class="grid2" style="margin-top:15px;">
+            <button id="btn-register-submit" onclick="registerNewUser()">إنشاء الحساب</button>
+            <button class="outline danger" onclick="hideRegisterScreen()">إلغاء والعودة</button>
+        </div>
+        <div id="reg-status" style="margin-top:10px; font-weight:bold; font-size:14px; text-align:center;"></div>
+    </div>
+</div>
+
+<div id="user-info-modal" class="oath-overlay hidden" style="z-index: 1001;">
+    <div class="oath-box" style="position:relative; width: 90%; max-width: 400px; padding: 30px 20px;">
+        <button onclick="closeUserModal()" style="position:absolute; top:15px; left:15px; background:var(--danger); color:white; border:none; border-radius:50%; width:30px; height:30px; font-weight:bold; cursor:pointer;">X</button>
+        <img id="um-avatar" src="" style="width:90px; height:90px; border-radius:50%; object-fit:cover; margin-bottom:15px; border:3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <h3 id="um-name" style="margin:0 0 5px 0; color:var(--text-main);">—</h3>
+        <div id="um-ola" class="en-num" style="color:var(--gold); font-size:16px; margin-bottom:20px; font-weight:bold;">—</div>
+        
+        <div style="background:var(--bg-top); padding:15px; border-radius:12px; margin-bottom:20px; border:1px dashed var(--gold);">
+            <div style="font-size:14px; color:var(--text-main); margin-bottom:5px;">إجمالي تسبيحات الترتيب العام</div>
+            <div id="um-total" class="en-num" style="color:var(--accent); font-size:24px; font-weight:bold;">0</div>
+        </div>
+        
+        <button id="btn-toggle-follow" onclick="toggleFollow()">متابعة 🤝</button>
+    </div>
+</div>
+
+<!-- المحتوى الرئيسي (أصبح مخفياً افتراضياً) -->
+<div class="wrap hidden" id="app-content">
+  <div class="logo-header">
+      <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo">
+  </div>
+  
+  <!-- صفحة الورد -->
+  <div id="view-dhikr" class="view">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 10px;">
+        <h3 style="margin:0; font-size:24px;">للذاكرين والذاكرات OLA</h3>
+        <span id="sync-status" style="font-size:14px; color:var(--accent); font-weight:bold;">متزامن ✅</span>
+    </div>
+    
+    <div class="quran-verse">
+        <div style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">بسم الله الرحمن الرحيم</div>
+        <div style="color: var(--text-main); font-size: 24px; line-height: 1.8;">﴿وَالذَّاكِرِينَ اللَّهَ كَثِيرًا وَالذَّاكِرَاتِ أَعَدَّ اللَّهُ لَهُم مَّغْفِرَةً وَأَجْرًا عَظِيمًا﴾</div>
+        <div style="color: var(--gold); margin-top: 12px; font-size: 16px;">صدق الله العظيم</div>
+    </div>
+    
+    <div id="normal-dhikr-list"></div>
+    <div id="friday-mode" class="hidden"></div>
+  </div>
+
+  <!-- صفحة المجالس -->
+  <div id="view-sessions" class="view hidden card">
+    <h3 style="text-align:center;">مجالس النور</h3>
+    <p style="text-align:center; font-size:14px; margin-top:0;">(صدقة جارية لمن تحب، وتُحسب من ضمن الترتيب العالمي للذاكرين)</p>
+    
+    <button id="btn-show-create-session" style="margin-bottom:20px;">+ إنشاء مجلس ذكر مخصص</button>
+    
+    <div id="create-session-form" class="hidden" style="background:var(--bg-top); padding:15px; border-radius:16px; margin-bottom:20px; border:1px solid var(--gold);">
+        <h4 style="margin-top:0;">إنشاء مجلس جديد</h4>
+        <input type="text" id="ses-dedicated" placeholder="الاسم أو مُهدى إلى (مثال: والدي، صديقي، ...)">
+        
+        <select id="ses-intention">
+            <option value="" disabled selected>-- اختر النية --</option>
+            <option value="الشفاء">الشفاء</option>
+            <option value="الرحمة">الرحمة</option>
+            <option value="إلى روح المرحوم">الوفاة (إلى روح المرحوم)</option>
+            <option value="الزواج">الزواج</option>
+            <option value="العمل">العمل</option>
+            <option value="النجاح">النجاح</option>
+            <option value="مباركة بنجاح">مباركة بنجاح</option>
+            <option value="السفر">السفر</option>
+            <option value="الولادة">الولادة</option>
+            <option value="مباركة بولادة">مباركة بولادة</option>
+            <option value="التوفيق">التوفيق</option>
+            <option value="قضاء الحاجة">قضاء الحاجة</option>
+            <option value="تفريج الهم">تفريج الهم</option>
+        </select>
+        
+        <input type="number" id="ses-days" placeholder="مدة المجلس (بالأيام)" min="1" max="30" value="1">
+        <select id="ses-dhikr-select"></select>
+        <div style="display:flex; gap:10px;">
+            <button id="btn-submit-session">إطلاق المجلس</button>
+            <button id="btn-cancel-session" class="outline danger">إلغاء</button>
+        </div>
+        <div id="ses-error" style="color:var(--danger); font-size:12px; margin-top:10px; text-align:center; line-height: 1.6;"></div>
+    </div>
+
+    <h4 style="border-bottom:1px solid var(--gold-light); padding-bottom:8px;">المجالس المفتوحة حالياً</h4>
+    <div id="active-sessions-list">جاري التحميل...</div>
+
+    <h4 style="border-bottom:1px solid var(--gold-light); padding-bottom:8px; margin-top:25px;">المجالس المنتهية</h4>
+    <div id="my-ended-sessions">جاري التحميل...</div>
+  </div>
+
+  <!-- صفحة داخل المجلس -->
+  <div id="view-inside-session" class="view hidden card">
+    <div style="text-align:center; margin-bottom:20px;">
+        <h2 style="color:var(--gold); margin-bottom:5px;">مجلس نور</h2>
+        <div style="font-size:18px; font-weight:bold;" id="ins-dedicated">مُهدى إلى: —</div>
+        <div style="font-size:16px; color:var(--text-main);" id="ins-intention">النية: —</div>
+        <div style="font-size:14px; margin-top:10px; color:var(--danger);" id="ins-timer">ينتهي بعد: —</div>
+    </div>
+    
+    <div style="background:var(--bg-top); padding:20px; border-radius:16px; text-align:center; border:2px dashed var(--gold);">
+        <div id="ins-dhikr-text" style="font-size:24px; line-height:1.6; margin-bottom:20px;">—</div>
+        <button id="btn-session-click" style="font-size:20px; padding:20px; height:auto;">
+            سَبِّح
+            <div id="ins-my-clicks" class="counter-badge" style="display:block; margin:15px auto 0; width:fit-content; font-size:24px;">0</div>
+        </button>
+    </div>
+
+    <div style="margin-top: 30px; border-top: 1px solid var(--gold-light); padding-top: 15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="margin: 0;">المشاركون في المجلس (<span id="ins-participants-count" class="en-num">0</span>)</h4>
+            <span style="font-size:10px; color:var(--accent);">تحديث تلقائي ⏳</span>
+        </div>
+        <div id="ins-participants-list" style="margin-top:10px; max-height: 250px; overflow-y: auto; background: rgba(255,255,255,0.7); border-radius: 12px; padding: 10px; border: 1px solid rgba(212, 175, 55, 0.3);">
+            <div style='text-align:center; font-size:14px;'>جاري تحميل المشاركين...</div>
+        </div>
+    </div>
+    
+    <button onclick="exitSession()" class="outline danger" style="margin-top:20px;">الخروج من المجلس</button>
+  </div>
+
+  <!-- صفحة الترتيب -->
+  <div id="view-ranking" class="view hidden card">
+    <div class="ramadan-banner">
+        🌙 المركز الأول يحصل على جائزة كبرى بقيمة<br>
+        <span class="en-num" style="font-size:22px;">1,000,000,000 OLA</span><br>
+        في شهر رمضان المبارك!
+    </div>
+    <h3 style="text-align:center;">ترتيب الذاكرين</h3>
+    <div id="ranking-list">جاري التحميل...</div>
+  </div>
+
+  <!-- صفحة الملف الشخصي -->
+  <div id="view-profile" class="view hidden card">
+    <h3 style="text-align:center; border-bottom:2px solid var(--gold-light); padding-bottom:10px;">حسابي الموحد</h3>
+    <div style="font-size:18px; line-height:2.2; text-align: center; margin-bottom: 25px;">
+        <p>الاسم: <strong id="prof-name">—</strong></p>
+        <p>رقم الحساب: <strong id="prof-ola" class="en-num" style="color:var(--gold);">—</strong></p>
+        <p>حالة الاشتراك: <strong id="prof-vip">—</strong></p>
+        <p>إجمالي تسبيحات الترتيب العام: <strong id="prof-total" class="en-num" style="color:var(--accent); font-size:24px;">0</strong></p>
+    </div>
+    <button onclick="logoutUser()" class="outline danger" style="border-width: 2px;">تسجيل الخروج / تبديل الحساب</button>
+  </div>
+</div>
+
+<div class="bottom-nav hidden" id="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('dhikr')">الورد</button>
+    <button class="nav-item" onclick="switchTab('sessions')">المجالس</button>
+    <button class="nav-item" onclick="switchTab('ranking')">الترتيب</button>
+    <button class="nav-item" onclick="switchTab('profile')">حسابي</button>
+</div>
+
+<script>
+const SUPABASE_URL = "http://167.86.106.111:8000";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE"; 
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let OLA_ID = localStorage.getItem("ola_id");
+let userProfile = null;
+let dhikrData = { d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, total_dhikr:0 };
+let pendingGlobalClicks = 0;
+
+let activeSessionId = null;
+let sessionLocalClicks = 0; 
+let sessionTotalSaved = 0; 
+let sessionClicksCache = {}; 
+let isSyncing = false;
+let syncInterval = null;
+
+let myFollows = [];
+let currentTargetUser = null;
+
+const formatNum = (num) => Number(num || 0).toLocaleString('en-US');
+
+const adhkars = [
+    "لا اله الا الله",
+    "اللهم صل على سيدنا محمد النبي الأمي وعلى اله وصحبه وسلم",
+    "استغفر الله العظيم و اتوب اليه",
+    "لا حول ولا قوة الا بالله",
+    "سبحان الله العظيم وبحمده",
+    "سبحان الله والحمد لله ولا اله الا الله والله اكبر",
+    "اشهد ان لا اله الا الله واشهد أن محمد رسول الله",
+    "لا اله الا الله وحده لا شريك له له الملك وله الحمد يحيي ويميت وهو على كل شيئ قدير",
+    "أنا لله وانا اليه راجعون",
+    "لا اله الا انت سبحانك اني كنت من الظالمين"
+];
+
+const securityQuestionsList = [
+    "ما هو اسم والدك؟",
+    "ما هو لونك المفضل؟",
+    "ما هو اسم حيوانك الأليف الأول؟",
+    "ما هو اسم صديق طفولتك المفضل؟",
+    "ما هي المدينة التي ولدت فيها؟",
+    "ما هو اسم حبيبتك/حبيبك الأول؟",
+    "ما هي أكلتك المفضلة؟"
+];
+let currentSecurityQuestion = "";
+
+/* ===== وظائف شاشة التسجيل ===== */
+function showRegisterScreen() {
+    document.getElementById("login-screen").classList.add("hidden");
+    document.getElementById("register-screen").classList.remove("hidden");
+    currentSecurityQuestion = securityQuestionsList[Math.floor(Math.random() * securityQuestionsList.length)];
+    document.getElementById("reg-sec-q").innerText = currentSecurityQuestion;
+    document.getElementById("reg-status").innerText = "";
+}
+
+function hideRegisterScreen() {
+    document.getElementById("register-screen").classList.add("hidden");
+    document.getElementById("login-screen").classList.remove("hidden");
+}
+
+function generateOLAID(){
+  const rand = Math.floor(Math.random()*900000000)+100000000;
+  const day  = Math.floor((Date.now()/(1000*60*60*24))%365);
+  return `OLA ${rand}-${day}`;
+}
+
+async function registerNewUser() {
+    const name = document.getElementById("reg-name").value.trim();
+    const dob = document.getElementById("reg-dob").value.trim();
+    const country = document.getElementById("reg-country").value.trim();
+    const city = document.getElementById("reg-city").value.trim();
+    const job = document.getElementById("reg-job").value.trim();
+    const gender = document.getElementById("reg-gender").value;
+    const pass = document.getElementById("reg-pass").value.trim();
+    const passConf = document.getElementById("reg-pass-confirm").value.trim();
+    const secA = document.getElementById("reg-sec-a").value.trim();
+    const out = document.getElementById("reg-status");
+
+    if (!name || !dob || !country || !city || !job || !gender || !pass || !secA) {
+        out.innerText = "⚠️ الرجاء ملء جميع الحقول بما فيها سؤال الأمان."; 
+        out.style.color = "var(--danger)";
+        return;
+    }
+    if (pass !== passConf) {
+        out.innerText = "⚠️ كلمتا السر غير متطابقتين."; 
+        out.style.color = "var(--danger)";
+        return;
+    }
+
+    const ola = generateOLAID();
+    out.innerText = "⏳ جارٍ إنشاء الحساب...";
+    out.style.color = "var(--text-main)";
+    
+    const expires = new Date(); 
+    expires.setFullYear(expires.getFullYear() + 100);
+
+    const { error } = await client.from("profiles").insert([{
+        full_name: name, dob_text: dob, country: country, city: city, job_title: job, gender: gender,
+        ola_id: ola, balance: 0, vip_level: 1, vip_expires_on: expires.toISOString().split("T")[0],
+        is_banned: false, password: pass,
+        security_question: currentSecurityQuestion, security_answer: secA
+    }]);
+    
+    if (error) { 
+        out.innerText = "❌ حدث خطأ في الاتصال بقاعدة البيانات."; 
+        out.style.color = "var(--danger)"; 
+        console.error(error); 
+        return; 
+    }
+    
+    out.innerText = "✅ تم الإنشاء بنجاح! رقمك: " + ola;
+    out.style.color = "var(--accent)";
+    
+    setTimeout(() => { 
+        document.getElementById("login-ola-id").value = ola;
+        document.getElementById("login-password").value = pass;
+        hideRegisterScreen();
+    }, 2500);
+}
+
+/* =========================================================
+   نفق الإعلانات الآمن (Ad Tunnel)
+========================================================= */
+async function showAdTunnel(onComplete) {
+    const AD_SUPABASE_URL = "https://jazz-rapid-finance-gate.trycloudflare.com"; 
+    const AD_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE";
+    
+    try {
+        const res = await fetch(AD_SUPABASE_URL + '/rest/v1/ola_ads?active=eq.true&select=*', { 
+            headers: { 'apikey': AD_SUPABASE_KEY, 'Authorization': 'Bearer ' + AD_SUPABASE_KEY } 
+        });
+        let ads = await res.json();
+        
+        if (!ads || ads.length === 0) {
+            if(onComplete) onComplete();
+            return;
+        }
+
+        ads = ads.sort(() => 0.5 - Math.random()).slice(0, 2);
+        let currentAdIndex = 0;
+        let timerInterval = null;
+
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999999; display:flex; justify-content:center; align-items:center; flex-direction:column; backdrop-filter:blur(5px);';
+        document.body.appendChild(overlay);
+
+        const badge = document.createElement('div');
+        badge.innerText = 'إعلان ممول OLA';
+        badge.style.cssText = 'position:absolute; top:20px; left:20px; background:rgba(212,175,55,0.9); color:#000; padding:6px 12px; border-radius:6px; font-family:Tahoma, sans-serif; font-size:12px; font-weight:bold; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3); z-index:1000000;';
+        badge.onclick = (e) => { e.stopPropagation(); window.open('https://ola1994om-code.github.io/OLA12/', '_blank'); };
+        overlay.appendChild(badge);
+
+        const timerUI = document.createElement('div');
+        timerUI.style.cssText = 'position:absolute; top:20px; right:20px; background:rgba(0,0,0,0.6); color:#fff; padding:8px 20px; border-radius:20px; font-family:Tahoma, sans-serif; font-size:16px; font-weight:bold; border:1px solid #fff; z-index:1000000; direction:ltr;';
+        overlay.appendChild(timerUI);
+
+        const skipBtn = document.createElement('button');
+        skipBtn.style.cssText = 'position:absolute; top:20px; right:20px; padding:8px 20px; background:#e53935; color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:20px; cursor:pointer; font-family:Tahoma, sans-serif; font-size:14px; font-weight:bold; display:none; z-index:1000000;';
+        overlay.appendChild(skipBtn);
+
+        const visitBtn = document.createElement('button');
+        visitBtn.innerText = '🌐 زيارة صفحة المعلن';
+        visitBtn.style.cssText = 'position:absolute; bottom:40px; padding:12px 25px; background:#0a2e6d; color:#ffffff; border:2px solid #d4af37; border-radius:30px; cursor:pointer; font-family:Tahoma, sans-serif; font-size:16px; font-weight:bold; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.5); z-index:1000000;';
+        overlay.appendChild(visitBtn);
+
+        const unmuteBtn = document.createElement('button');
+        unmuteBtn.innerHTML = '🔇';
+        unmuteBtn.style.cssText = 'position:absolute; bottom:40px; right:20px; background:rgba(0,0,0,0.7); color:#fff; border:1px solid rgba(255,255,255,0.3); width:50px; height:50px; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:22px; z-index:1000000; box-shadow:0 4px 10px rgba(0,0,0,0.5); display:none;';
+        overlay.appendChild(unmuteBtn);
+
+        const mediaCont = document.createElement('div');
+        mediaCont.style.cssText = 'width:100%; height:75%; display:flex; justify-content:center; align-items:center; cursor:pointer;';
+        overlay.appendChild(mediaCont);
+
+        function playCurrentAd() {
+            const ad = ads[currentAdIndex];
+            mediaCont.innerHTML = ''; 
+            skipBtn.style.display = 'none';
+            timerUI.style.display = 'block';
+            unmuteBtn.style.display = 'none';
+            
+            skipBtn.innerText = (currentAdIndex === 0 && ads.length > 1) ? 'التالي ⏭' : 'تخطي ⏭';
+
+            if (ad.ad_type === 'video') {
+                const vid = document.createElement('video');
+                vid.src = ad.media_url; 
+                vid.style.cssText = 'max-width:90%; max-height:100%; object-fit:contain; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);';
+                vid.autoplay = true;
+                vid.muted = true; 
+                vid.playsInline = true;
+                mediaCont.appendChild(vid);
+                
+                unmuteBtn.style.display = 'flex';
+                unmuteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    vid.muted = !vid.muted;
+                    unmuteBtn.innerHTML = vid.muted ? '🔇' : '🔊';
+                };
+            } else {
+                const img = document.createElement('img');
+                img.src = ad.media_url;
+                img.style.cssText = 'max-width:90%; max-height:100%; object-fit:contain; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);';
+                mediaCont.appendChild(img);
+            }
+
+            visitBtn.onclick = (e) => {
+                e.stopPropagation();
+                if(ad.target_url) window.open(ad.target_url, '_blank');
+            };
+
+            skipBtn.onclick = (e) => {
+                e.stopPropagation();
+                currentAdIndex++;
+                if (currentAdIndex < ads.length) {
+                    playCurrentAd();
+                } else {
+                    document.body.removeChild(overlay);
+                    if(onComplete) onComplete();
+                }
+            };
+
+            let timeLeft = 5;
+            timerUI.innerText = timeLeft;
+            if(timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerUI.style.display = 'none';
+                    skipBtn.style.display = 'block';
+                } else {
+                    timerUI.innerText = timeLeft;
+                }
+            }, 1000);
+        }
+
+        playCurrentAd();
+
+    } catch (err) {
+        console.error("Ad Tunnel Error:", err);
+        if(onComplete) onComplete();
+    }
+}
+
+/* ===== وظائف التطبيق الأصلي ===== */
+function checkIsVIP() {
+    if (!userProfile || !userProfile.vip_expires_on) return false;
+    const expiryDate = new Date(userProfile.vip_expires_on);
+    return !isNaN(expiryDate) && expiryDate > new Date();
+}
+
+async function loginUser() {
+    const idInput = document.getElementById("login-ola-id").value.trim();
+    const passInput = document.getElementById("login-password").value.trim();
+
+    if(!idInput || !passInput) {
+        alert("الرجاء إدخال رقم الحساب وكلمة المرور.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-login");
+    btn.innerText = "جاري التحقق...";
+    btn.disabled = true;
+
+    try {
+        const { data: profile, error } = await client.from("profiles")
+            .select("*")
+            .eq("ola_id", idInput)
+            .single();
+
+        if (error) {
+            console.error(error);
+            alert("حدث خطأ في الاتصال بقاعدة البيانات. (تأكد من أن الرابط https)");
+            btn.innerText = "تسجيل الدخول";
+            btn.disabled = false;
+            return;
+        }
+
+        if (profile) {
+            if (profile.password && profile.password !== passInput) {
+                alert("كلمة المرور غير صحيحة.");
+                btn.innerText = "تسجيل الدخول";
+                btn.disabled = false;
+                return;
+            }
+            
+            localStorage.setItem("ola_id", idInput);
+            OLA_ID = idInput; 
+            
+            btn.innerText = "تسجيل الدخول";
+            btn.disabled = false;
+
+            await init();
+        } else {
+            alert("الحساب غير موجود.");
+            btn.innerText = "تسجيل الدخول";
+            btn.disabled = false;
+        }
+    } catch (err) {
+        console.error(err);
+        alert("حدث خطأ أثناء الاتصال بالسيرفر. إذا كنت تستخدم GitHub تأكد من أن الرابط يبدأ بـ HTTPS.");
+        btn.innerText = "تسجيل الدخول";
+        btn.disabled = false;
+    }
+}
+
+async function logoutUser() {
+    if(confirm("هل أنت متأكد أنك تريد تسجيل الخروج والتبديل إلى حساب آخر؟")) {
+        if (pendingGlobalClicks > 0 || sessionLocalClicks > 0) {
+            await syncData();
+        }
+        
+        localStorage.removeItem("ola_id");
+        OLA_ID = null;
+
+        if (syncInterval) {
+            clearInterval(syncInterval);
+            syncInterval = null;
+        }
+
+        userProfile = null;
+        dhikrData = { d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, total_dhikr:0 };
+        pendingGlobalClicks = 0;
+        sessionLocalClicks = 0;
+
+        document.getElementById("app-content").classList.add("hidden");
+        document.getElementById("bottom-nav").classList.add("hidden");
+        document.getElementById("user-info-modal").classList.add("hidden");
+        
+        document.getElementById("login-ola-id").value = "";
+        document.getElementById("login-password").value = "";
+        document.getElementById("login-screen").classList.remove("hidden");
+    }
+}
+
+async function init() {
+    if(!OLA_ID) {
+        document.getElementById("app-content").classList.add("hidden");
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("bottom-nav").classList.add("hidden");
+        return; 
+    }
+    
+    document.getElementById("login-screen").classList.add("hidden");
+
+    showAdTunnel(async () => {
+        try {
+            const { data: profile } = await client.from("profiles").select("*").eq("ola_id", OLA_ID).single();
+            if(profile) userProfile = profile;
+
+            if (userProfile && userProfile.is_banned) {
+                document.getElementById("app-content").innerHTML = `<div style="text-align:center; padding:60px;">🛑<h2 style="color:var(--danger);">تم حظر حسابك</h2><button onclick="logoutUser()" class="outline danger" style="margin-top:20px;">تسجيل الخروج</button></div>`;
+                document.getElementById("app-content").classList.remove("hidden");
+                return;
+            }
+
+            document.getElementById("app-content").classList.remove("hidden");
+            document.getElementById("bottom-nav").classList.remove("hidden");
+            switchTab('dhikr');
+
+            let { data: counts } = await client.from("adhkar_counters").select("*").eq("ola_id", OLA_ID).single();
+            if(!counts) {
+                await client.from("adhkar_counters").insert([{ ola_id: OLA_ID }]);
+                counts = { d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, total_dhikr:0 };
+            }
+            dhikrData = counts;
+
+            const { data: followsData } = await client.from("follows").select("following_ola").eq("follower_ola", OLA_ID);
+            if (followsData) {
+                myFollows = followsData.map(f => f.following_ola);
+            } else {
+                myFollows = [];
+            }
+
+            const { data: settings } = await client.from("app_settings").select("*").maybeSingle();
+            
+            renderDhikr(settings?.friday_mode_active);
+            populateSessionDropdown();
+            updateProfileUI();
+            
+            if(!syncInterval) {
+                syncInterval = setInterval(() => syncData(), 5000); 
+            }
+        } catch (e) {
+            console.error("خطأ في تشغيل التطبيق:", e);
+            alert("حدث خطأ أثناء تحميل بيانات التطبيق.");
+        }
+    });
+}
+
+function renderDhikr(isFriday) {
+    const list = document.getElementById("normal-dhikr-list");
+    list.innerHTML = "";
+    
+    adhkars.forEach((text, index) => {
+        const i = index + 1;
+        if (isFriday && index !== 1) return;
+        
+        const btn = document.createElement("button");
+        btn.className = "dhikr-btn";
+        btn.innerHTML = `<div style="flex:1;">${text}</div> <div class="counter-badge" id="counter-${i}">${formatNum(dhikrData["d"+i])}</div>`;
+        btn.onclick = () => addDhikr(i);
+        list.appendChild(btn);
+    });
+}
+
+function addDhikr(index) {
+    dhikrData["d"+index]++; 
+    dhikrData.total_dhikr++; 
+    pendingGlobalClicks++;
+    
+    document.getElementById("counter-"+index).innerText = formatNum(dhikrData["d"+index]);
+    document.getElementById("sync-status").innerText = "جاري الحفظ...";
+}
+
+document.getElementById("btn-session-click").addEventListener("click", () => {
+    if(!activeSessionId) return;
+    sessionLocalClicks++; 
+    dhikrData.total_dhikr++; 
+    pendingGlobalClicks++;
+    
+    document.getElementById("ins-my-clicks").innerText = formatNum(sessionTotalSaved + sessionLocalClicks);
+    document.getElementById("sync-status").innerText = "جاري الحفظ...";
+});
+
+async function syncData(forceSessionId = null) {
+    if (isSyncing) return;
+    isSyncing = true;
+
+    let currentSession = forceSessionId || activeSessionId;
+    let addedGlobal = pendingGlobalClicks; 
+    let addedSessionClicks = sessionLocalClicks;
+    
+    if (addedGlobal === 0 && addedSessionClicks === 0) {
+        isSyncing = false;
+        return;
+    }
+
+    pendingGlobalClicks -= addedGlobal; 
+    sessionLocalClicks -= addedSessionClicks; 
+    
+    if (currentSession && addedSessionClicks > 0) {
+        sessionTotalSaved += addedSessionClicks;
+        sessionClicksCache[currentSession] = sessionTotalSaved;
+    }
+
+    let isSynced = false;
+
+    if (addedGlobal > 0 || addedSessionClicks > 0) {
+        const { error } = await client.from("adhkar_counters").update(dhikrData).eq("ola_id", OLA_ID);
+        if (!error) {
+            isSynced = true;
+        } else {
+            pendingGlobalClicks += addedGlobal; 
+        }
+    }
+
+    if (currentSession && addedSessionClicks > 0) {
+        const { error } = await client.from("session_clicks").upsert(
+            { session_id: currentSession, ola_id: OLA_ID, clicks: sessionTotalSaved },
+            { onConflict: 'session_id, ola_id' }
+        );
+        
+        if (!error) {
+            isSynced = true;
+        } else {
+            sessionTotalSaved -= addedSessionClicks;
+            sessionLocalClicks += addedSessionClicks;
+            sessionClicksCache[currentSession] = sessionTotalSaved;
+        }
+    }
+    
+    if (isSynced) {
+        document.getElementById("sync-status").innerText = "متزامن ✅";
+        updateProfileUI();
+    } else {
+        document.getElementById("sync-status").innerText = "خطأ بالمزامنة ❌";
+    }
+
+    if (currentSession && !document.getElementById("view-inside-session").classList.contains("hidden")) {
+        loadSessionParticipants(currentSession);
+    }
+    
+    isSyncing = false;
+}
+
+function populateSessionDropdown() {
+    const select = document.getElementById("ses-dhikr-select");
+    adhkars.forEach((text, i) => {
+        select.innerHTML += `<option value="${i}">${text}</option>`;
+    });
+}
+
+document.getElementById("btn-show-create-session").onclick = () => {
+    document.getElementById("create-session-form").classList.remove("hidden");
+};
+document.getElementById("btn-cancel-session").onclick = () => {
+    document.getElementById("create-session-form").classList.add("hidden");
+};
+
+document.getElementById("btn-submit-session").onclick = async () => {
+    const dedicated = document.getElementById("ses-dedicated").value.trim();
+    const intention = document.getElementById("ses-intention").value.trim();
+    const index = document.getElementById("ses-dhikr-select").value;
+    const days = parseInt(document.getElementById("ses-days").value, 10);
+    const err = document.getElementById("ses-error");
+    
+    if(!dedicated || !intention) return err.innerText = "الرجاء تعبئة جميع الحقول.";
+    if(isNaN(days) || days < 1 || days > 30) return err.innerText = "مدة المجلس يجب أن تكون بين يوم واحد و 30 يوماً.";
+    
+    err.innerText = "⏳ جاري التحقق...";
+
+    const { data: activeSessions } = await client.from("special_sessions")
+        .select("id")
+        .eq("creator_ola", OLA_ID)
+        .eq("is_claimed", false);
+        
+    if(activeSessions && activeSessions.length > 0) {
+        return err.innerText = "❌ لديك مجلس قيد التشغيل حالياً يرجى إغلاقه أولاً.";
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + days);
+
+    const { error } = await client.from("special_sessions").insert([{
+        creator_ola: OLA_ID,
+        creator_name: userProfile.full_name,
+        intention: intention,
+        dedicated_to: dedicated,
+        dhikr_index: index,
+        expires_at: expiresAt.toISOString()
+    }]);
+
+    if(error) return err.innerText = "❌ حدث خطأ بالسيرفر.";
+    
+    err.innerText = "";
+    document.getElementById("create-session-form").classList.add("hidden");
+    alert("✅ تم إطلاق المجلس المبارك بنجاح!");
+    loadSessions();
+};
+
+async function loadSessions() {
+    const activeList = document.getElementById("active-sessions-list");
+    const endedList = document.getElementById("my-ended-sessions");
+    activeList.innerHTML = "⏳ جاري التحميل..."; endedList.innerHTML = "⏳ جاري التحميل...";
+
+    const now = new Date().toISOString();
+    
+    const { data: active } = await client.from("special_sessions").select("*").gt("expires_at", now).order("id", {ascending: false});
+    const { data: ended } = await client.from("special_sessions").select("*").eq("creator_ola", OLA_ID).lte("expires_at", now).eq("is_claimed", false);
+
+    activeList.innerHTML = "";
+    if(!active || active.length === 0) activeList.innerHTML = "<div style='text-align:center; padding:10px;'>لا توجد مجالس مفتوحة حالياً.</div>";
+    else {
+        active.forEach(s => {
+            activeList.innerHTML += `
+            <div class="session-item" style="display:block;">
+                <div style="font-weight:bold; color:var(--gold);">إلى: ${s.dedicated_to}</div>
+                <div style="font-size:14px; margin-bottom:10px;">النية: ${s.intention}</div>
+                <div style="font-size:12px; color:var(--text-main); margin-bottom:10px;">من: ${s.creator_name}</div>
+                <button onclick="joinSession(${s.id}, '${s.dedicated_to}', '${s.intention}', ${s.dhikr_index}, '${s.expires_at}')">دخول المجلس</button>
+            </div>`;
+        });
+    }
+
+    endedList.innerHTML = "";
+    if(!ended || ended.length === 0) endedList.innerHTML = "<div style='text-align:center; padding:10px;'>لا توجد مجالس منتهية بانتظار الإغلاق.</div>";
+    else {
+        ended.forEach(s => {
+            endedList.innerHTML += `
+            <div class="session-item" style="display:block;">
+                <div style="font-weight:bold;">إلى: ${s.dedicated_to}</div>
+                <button onclick="closeSession(${s.id})" style="margin-top:10px; background:var(--accent); border-color:var(--accent);">إغلاق المجلس</button>
+            </div>`;
+        });
+    }
+}
+
+async function loadSessionParticipants(sessionIdOverride = null) {
+    let targetSession = sessionIdOverride || activeSessionId;
+    if (!targetSession) return;
+
+    try {
+        const { data: clicksData } = await client
+            .from("session_clicks")
+            .select("ola_id, clicks")
+            .eq("session_id", targetSession)
+            .order("clicks", { ascending: false });
+
+        let participants = clicksData || [];
+        
+        let myTotal = sessionTotalSaved + sessionLocalClicks;
+        let myEntry = participants.find(c => c.ola_id === OLA_ID);
+        
+        if (myEntry) {
+            myEntry.clicks = Math.max(Number(myEntry.clicks), myTotal);
+        } else if (myTotal > 0) {
+            participants.push({ ola_id: OLA_ID, clicks: myTotal });
+        }
+
+        participants.sort((a, b) => b.clicks - a.clicks);
+
+        if (participants.length === 0) {
+            document.getElementById("ins-participants-count").innerText = "0";
+            document.getElementById("ins-participants-list").innerHTML = "<div style='text-align:center; font-size:14px;'>لا يوجد مشاركين حتى الآن. كُن أول الذاكرين!</div>";
+            return;
+        }
+
+        document.getElementById("ins-participants-count").innerText = participants.length;
+
+        const ids = participants.map(c => c.ola_id);
+        const { data: profs } = await client.from("profiles").select("ola_id, full_name, avatar_url").in("ola_id", ids);
+        
+        const profMap = {};
+        if (profs) profs.forEach(p => profMap[p.ola_id] = p);
+
+        let html = "";
+        participants.forEach(c => {
+            const prof = profMap[c.ola_id] || { full_name: "مستخدم OLA", avatar_url: null };
+            const isMe = c.ola_id === OLA_ID;
+            
+            const avatarSrc = prof.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='50' height='50' fill='%23e8f5e9'/%3E%3Ctext x='50%25' y='50%25' fill='%231b5e20' font-size='20' font-family='Arial' text-anchor='middle' dy='.3em'%3E%D8%9F%3C/text%3E%3C/svg%3E";
+            
+            const safeName = prof.full_name ? prof.full_name.replace(/'/g, "\\'") : "مستخدم OLA";
+
+            let actionBtn = isMe 
+                ? `<span style="color:var(--accent); font-size:12px; font-weight:bold;">(أنت)</span>` 
+                : `<button onclick="showUserProfile('${c.ola_id}', '${safeName}', '${avatarSrc}')" class="outline" style="padding:4px 8px; font-size:12px; border-radius:6px; width:auto; border-color:var(--gold);">عرض الحساب 👤</button>`;
+
+            html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 8px; border-bottom:1px dashed rgba(212, 175, 55, 0.3); ${isMe ? 'background:rgba(76, 175, 80, 0.1); border-radius:8px;' : ''}">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <img src="${avatarSrc}" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--gold); object-fit:cover;">
+                    <div>
+                        <div style="font-size:14px; font-weight:bold; color:var(--text-main); margin-bottom:4px;">${prof.full_name}</div>
+                        ${actionBtn}
+                    </div>
+                </div>
+                <div class="counter-badge" style="font-size:16px; padding:6px 12px;">${formatNum(c.clicks)}</div>
+            </div>`;
+        });
+
+        document.getElementById("ins-participants-list").innerHTML = html;
+    } catch (e) {
+        console.error("خطأ في جلب المشاركين", e);
+    }
+}
+
+window.joinSession = async (id, dedicated, intention, dhikrIndex, expiresAt) => {
+    activeSessionId = id;
+    sessionLocalClicks = 0;
+    
+    sessionTotalSaved = sessionClicksCache[id] || 0;
+    
+    const { data } = await client.from("session_clicks").select("clicks").match({ session_id: id, ola_id: OLA_ID }).maybeSingle();
+    if(data) {
+        let dbClicks = Number(data.clicks);
+        sessionTotalSaved = Math.max(sessionTotalSaved, dbClicks);
+        sessionClicksCache[id] = sessionTotalSaved;
+    }
+    
+    document.getElementById("ins-dedicated").innerText = "مُهدى إلى: " + dedicated;
+    document.getElementById("ins-intention").innerText = "النية: " + intention;
+    document.getElementById("ins-dhikr-text").innerText = adhkars[dhikrIndex];
+    document.getElementById("ins-my-clicks").innerText = formatNum(sessionTotalSaved);
+    
+    document.getElementById("ins-participants-list").innerHTML = "<div style='text-align:center; font-size:14px;'>جاري تحميل المشاركين...</div>";
+    document.getElementById("ins-participants-count").innerText = "0";
+
+    const diff = new Date(expiresAt) - new Date();
+    if (diff <= 0) {
+        document.getElementById("ins-timer").innerText = "المجلس انتهى";
+    } else {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        let timeStr = "";
+        if (d > 0) timeStr += d + " يوم و ";
+        timeStr += h + " ساعة";
+        document.getElementById("ins-timer").innerText = "ينتهي بعد: " + timeStr;
+    }
+
+    document.querySelectorAll(".view").forEach(el => el.classList.add("hidden"));
+    document.getElementById("view-inside-session").classList.remove("hidden");
+    
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+    const navEl = document.querySelector(`.nav-item[onclick="switchTab('sessions')"]`);
+    if(navEl) navEl.classList.add("active");
+
+    loadSessionParticipants();
+};
+
+window.exitSession = async () => {
+    switchTab('sessions');
+};
+
+window.closeSession = async (sessionId) => {
+    const btn = event.target;
+    btn.innerText = "⏳ جاري الإغلاق..."; btn.disabled = true;
+
+    await client.from("special_sessions").update({ is_claimed: true }).eq("id", sessionId);
+    
+    alert(`✅ تم إغلاق المجلس بنجاح!`);
+    loadSessions();
+};
+
+window.showUserProfile = async function(targetOla, name, avatarUrl) {
+    if (targetOla === OLA_ID) return;
+    
+    currentTargetUser = targetOla;
+    document.getElementById("um-name").innerText = name;
+    document.getElementById("um-ola").innerText = targetOla;
+    document.getElementById("um-avatar").src = avatarUrl;
+    document.getElementById("um-total").innerText = "⏳..."; 
+    
+    updateFollowBtnUI();
+    document.getElementById("user-info-modal").classList.remove("hidden");
+
+    try {
+        const { data } = await client.from("adhkar_counters").select("total_dhikr").eq("ola_id", targetOla).single();
+        document.getElementById("um-total").innerText = data ? formatNum(data.total_dhikr) : "0";
+    } catch (e) {
+        document.getElementById("um-total").innerText = "غير متوفر";
+    }
+};
+
+window.closeUserModal = function() {
+    document.getElementById("user-info-modal").classList.add("hidden");
+    currentTargetUser = null;
+};
+
+function updateFollowBtnUI() {
+    const btn = document.getElementById("btn-toggle-follow");
+    if (myFollows.includes(currentTargetUser)) {
+        btn.innerText = "إلغاء المتابعة ❌";
+        btn.classList.add("outline");
+        btn.classList.add("danger");
+    } else {
+        btn.innerText = "متابعة 🤝";
+        btn.className = ""; 
+    }
+}
+
+window.toggleFollow = async function() {
+    if(!currentTargetUser) return;
+    const btn = document.getElementById("btn-toggle-follow");
+    btn.disabled = true;
+    
+    if (myFollows.includes(currentTargetUser)) {
+        await client.from("follows").delete().match({ follower_ola: OLA_ID, following_ola: currentTargetUser });
+        myFollows = myFollows.filter(id => id !== currentTargetUser);
+    } else {
+        await client.from("follows").insert([{ follower_ola: OLA_ID, following_ola: currentTargetUser }]);
+        myFollows.push(currentTargetUser);
+    }
+    
+    updateFollowBtnUI();
+    btn.disabled = false;
+};
+
+async function loadRanking() {
+    try {
+        const rankingContainer = document.getElementById("ranking-list");
+        rankingContainer.innerHTML = "<div style='text-align:center; padding:20px;'>جاري التحميل... ⏳</div>";
+        
+        const { data, error } = await client.from("adhkar_counters").select("ola_id, total_dhikr").order("total_dhikr", { ascending: false }).limit(50);
+        if (error) throw error;
+        
+        if (!data || data.length === 0) return rankingContainer.innerHTML = "<div style='text-align:center; padding:20px;'>لا يوجد ذاكرين حتى الآن.</div>";
+        
+        const ids = data.map(d => d.ola_id).filter(id => id);
+        const profMap = {};
+        
+        if (ids.length > 0) {
+            const { data: profs } = await client.from("profiles").select("ola_id, full_name, avatar_url").in("ola_id", ids);
+            if (profs) profs.forEach(p => profMap[p.ola_id] = p);
+        }
+
+        let html = "";
+        data.forEach((d, i) => {
+            if (!d.ola_id) return;
+            const prof = profMap[d.ola_id] || { full_name: "مستخدم OLA", avatar_url: null };
+            const isMe = (d.ola_id === OLA_ID);
+            
+            const avatarSrc = prof.avatar_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect width='50' height='50' fill='%23e8f5e9'/%3E%3Ctext x='50%25' y='50%25' fill='%231b5e20' font-size='20' font-family='Arial' text-anchor='middle' dy='.3em'%3E%D8%9F%3C/text%3E%3C/svg%3E";
+            
+            const safeName = prof.full_name ? prof.full_name.replace(/'/g, "\\'") : "مستخدم OLA";
+
+            let actionBtn = isMe 
+                ? `<span style="color:var(--accent); font-weight:bold; font-size:14px;">(أنت)</span>` 
+                : `<button onclick="showUserProfile('${d.ola_id}', '${safeName}', '${avatarSrc}')" class="outline" style="padding:6px 12px; font-size:12px; border-radius:8px; width:auto;">عرض الحساب 👤</button>`;
+
+            html += `<div class="rank-item ${isMe ? 'is-me' : ''}">
+                <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                    <div class="rank-num">${formatNum(i + 1)}</div>
+                    <img src="${avatarSrc}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--gold);">
+                    <div>
+                        <div style="font-size:16px; font-weight:bold;">${prof.full_name}</div>
+                        <div style="font-size:12px; color:var(--text-main);" class="en-num">${d.ola_id}</div>
+                    </div>
+                </div>
+                <div style="text-align:left; min-width:80px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="color:var(--text-main); font-weight:bold; font-size:14px;"><span class="en-num">${formatNum(d.total_dhikr)}</span> تسبيحة</div>
+                    ${actionBtn}
+                </div>
+            </div>`;
+        });
+        rankingContainer.innerHTML = html;
+    } catch (err) {}
+}
+
+function updateProfileUI() {
+    if(!userProfile) return;
+    document.getElementById("prof-name").innerText = userProfile.full_name || "مستخدم OLA";
+    document.getElementById("prof-ola").innerText = userProfile.ola_id;
+    document.getElementById("prof-total").innerText = formatNum(dhikrData.total_dhikr);
+
+    const isVIP = checkIsVIP();
+    const subStatus = isVIP ? "مشترك VIP 🌟" : "حساب مجاني ⏳";
+
+    document.getElementById("prof-vip").innerText = subStatus;
+    
+    if(isVIP){
+        document.getElementById("prof-vip").style.color = "var(--gold)";
+        document.getElementById("prof-vip").style.fontWeight = "bold";
+    } else {
+        document.getElementById("prof-vip").style.color = "var(--text-main)";
+        document.getElementById("prof-vip").style.fontWeight = "normal";
+    }
+}
+
+function switchTab(tab) {
+    if (activeSessionId) {
+        syncData(activeSessionId); 
+        activeSessionId = null;
+    } else {
+        syncData();
+    }
+    
+    document.querySelectorAll(".view").forEach(el => el.classList.add("hidden"));
+    document.getElementById("view-" + tab).classList.remove("hidden");
+    
+    document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+    const navEl = document.querySelector(`.nav-item[onclick="switchTab('${tab}')"]`);
+    if(navEl) navEl.classList.add("active");
+
+    if(tab === 'ranking') loadRanking();
+    if(tab === 'sessions') loadSessions();
+    if(tab === 'profile') updateProfileUI();
+}
+
+window.onload = function() {
+    if(localStorage.getItem("ola_id")) {
+        init();
+    } else {
+        // تم إضافة هذا الجزء ليعرض الشاشة بشكل صحيح في حال عدم توفر تسجيل دخول
+        document.getElementById("login-screen").classList.remove("hidden");
+        document.getElementById("app-content").classList.add("hidden");
+        document.getElementById("bottom-nav").classList.add("hidden");
+    }
+};
+</script>
+</body>
+</html>
