@@ -4,10 +4,13 @@
 <meta charset="UTF-8">
 <title>  OLA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!--         -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;700&display=swap');
-
   :root {
     --bg-top: #e8f5e9; 
     --bg-bottom: #ffffff;
@@ -24,7 +27,8 @@
   
   body { 
     margin: 0; 
-    font-family: 'Tajawal', system-ui, Tahoma, sans-serif;
+    /*        */
+    font-family: 'Tajawal', Arial, system-ui, Tahoma, sans-serif;
     background: linear-gradient(135deg, var(--bg-top), var(--bg-bottom));
     background-attachment: fixed;
     color: var(--text-main); 
@@ -52,13 +56,13 @@
     backdrop-filter: blur(10px);
   }
 
-  h2, h3 { color: var(--text-main); font-family: 'Amiri', serif; margin-top: 0; }
+  h2, h3 { color: var(--text-main); font-family: 'Amiri', 'Times New Roman', serif; margin-top: 0; }
   
   button { 
     width: 100%; padding: 14px; border-radius: 12px; 
     border: 1px solid var(--gold); background: var(--gold); 
     color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; 
-    font-family: 'Tajawal', sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    font-family: 'Tajawal', Arial, sans-serif; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
   }
   button:active { transform: scale(0.97); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -69,7 +73,7 @@
     background: #ffffff; border: 1px solid rgba(212, 175, 55, 0.5); color: var(--text-main); 
     text-align: right; display: flex; justify-content: space-between; align-items: center; 
     margin-bottom: 12px; padding: 16px; font-size: 18px; line-height: 1.6; 
-    border-radius: 16px; font-family: 'Amiri', serif; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border-radius: 16px; font-family: 'Amiri', 'Times New Roman', serif; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     transition: 0.2s;
   }
   .dhikr-btn:active { background: var(--gold-light); border-color: var(--gold); }
@@ -114,7 +118,7 @@
   
   input, select {
     width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--gold); 
-    background: #fff; color: var(--text-main); margin-bottom: 15px; font-size: 16px; font-family: 'Tajawal', sans-serif;
+    background: #fff; color: var(--text-main); margin-bottom: 15px; font-size: 16px; font-family: 'Tajawal', Arial, sans-serif;
   }
   
   .ramadan-banner {
@@ -126,7 +130,7 @@
   .en-num { direction: ltr; display: inline-block; font-family: Tahoma, sans-serif; }
 
   .quran-verse {
-      text-align: center; margin-bottom: 20px; font-family: 'Amiri', serif;
+      text-align: center; margin-bottom: 20px; font-family: 'Amiri', 'Times New Roman', serif;
       background: var(--card-bg); padding: 20px 15px; border-radius: 16px;
       border: 1px dashed var(--gold); box-shadow: 0 4px 15px rgba(0,0,0,0.03);
   }
@@ -151,7 +155,7 @@
         <div class="logo-header">
             <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo">
         </div>
-        <h3 style="color:var(--gold); font-family:'Amiri', serif; font-size:28px; margin-bottom: 10px;"> </h3>
+        <h3 style="color:var(--gold); font-size:28px; margin-bottom: 10px;"> </h3>
         <p style="margin-bottom:25px; color:var(--text-main); font-size: 16px;">      </p>
         <input type="text" id="login-ola-id" placeholder=": OLA 471264597-201" style="text-align:center; direction:ltr; font-weight:bold; letter-spacing: 1px;">
         <input type="password" id="login-password" placeholder=" " style="text-align:center; direction:ltr; font-weight:bold; letter-spacing: 1px;">
@@ -167,7 +171,7 @@
         <div class="logo-header" style="text-align:center;">
             <img src="https://i.ibb.co/j0WTgHT/IMG-20260624-WA0005-10.jpg" alt="OLA Logo" style="max-width: 100px;">
         </div>
-        <h3 style="color:var(--gold); font-family:'Amiri', serif; font-size:26px; margin-bottom: 15px; text-align:center;">  </h3>
+        <h3 style="color:var(--gold); font-size:26px; margin-bottom: 15px; text-align:center;">  </h3>
         
         <div class="grid2">
             <input id="reg-name" placeholder=" "/>
@@ -291,8 +295,8 @@
     </div>
     
     <div style="background:var(--bg-top); padding:20px; border-radius:16px; text-align:center; border:2px dashed var(--gold);">
-        <div id="ins-dhikr-text" style="font-family:'Amiri', serif; font-size:24px; line-height:1.6; margin-bottom:20px;">—</div>
-        <button id="btn-session-click" style="font-size:20px; padding:20px; height:auto; font-family:'Amiri', serif;">
+        <div id="ins-dhikr-text" style="font-size:24px; line-height:1.6; margin-bottom:20px;">—</div>
+        <button id="btn-session-click" style="font-size:20px; padding:20px; height:auto;">
             
             <div id="ins-my-clicks" class="counter-badge" style="display:block; margin:15px auto 0; width:fit-content; font-size:24px;">0</div>
         </button>
@@ -463,10 +467,9 @@ async function registerNewUser() {
 }
 
 /* =========================================================
-      (Ad Tunnel)    
+      (Ad Tunnel)
 ========================================================= */
-async function showAdTunnel() {
-    //        
+async function showAdTunnel(onComplete) {
     const AD_SUPABASE_URL = "https://jazz-rapid-finance-gate.trycloudflare.com"; 
     const AD_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE";
     
@@ -475,7 +478,12 @@ async function showAdTunnel() {
             headers: { 'apikey': AD_SUPABASE_KEY, 'Authorization': 'Bearer ' + AD_SUPABASE_KEY } 
         });
         let ads = await res.json();
-        if (!ads || ads.length === 0) return;
+        
+        //        
+        if (!ads || ads.length === 0) {
+            if(onComplete) onComplete();
+            return;
+        }
 
         ads = ads.sort(() => 0.5 - Math.random()).slice(0, 2);
         let currentAdIndex = 0;
@@ -556,6 +564,7 @@ async function showAdTunnel() {
                     playCurrentAd();
                 } else {
                     document.body.removeChild(overlay);
+                    if(onComplete) onComplete();
                 }
             };
 
@@ -579,6 +588,8 @@ async function showAdTunnel() {
 
     } catch (err) {
         console.error("Ad Tunnel Error:", err);
+        //           
+        if(onComplete) onComplete();
     }
 }
 
@@ -594,44 +605,54 @@ async function loginUser() {
     const idInput = document.getElementById("login-ola-id").value.trim();
     const passInput = document.getElementById("login-password").value.trim();
 
-    if(idInput && passInput) {
-        const btn = document.getElementById("btn-login");
-        btn.innerText = " ...";
-        btn.disabled = true;
+    if(!idInput || !passInput) {
+        alert("     .");
+        return;
+    }
 
-        try {
-            const { data: profile, error } = await client.from("profiles")
-                .select("*")
-                .eq("ola_id", idInput)
-                .single();
+    const btn = document.getElementById("btn-login");
+    btn.innerText = " ...";
+    btn.disabled = true;
 
-            if (profile) {
-                if (profile.password && profile.password !== passInput) {
-                    alert("   .");
-                    btn.innerText = " ";
-                    btn.disabled = false;
-                    return;
-                }
-                
-                localStorage.setItem("ola_id", idInput);
-                OLA_ID = idInput; 
-                
+    try {
+        const { data: profile, error } = await client.from("profiles")
+            .select("*")
+            .eq("ola_id", idInput)
+            .single();
+
+        if (error) {
+            console.error(error);
+            alert("     . (    https)");
+            btn.innerText = " ";
+            btn.disabled = false;
+            return;
+        }
+
+        if (profile) {
+            if (profile.password && profile.password !== passInput) {
+                alert("   .");
                 btn.innerText = " ";
                 btn.disabled = false;
-
-                await init();
-            } else {
-                alert("  .");
-                btn.innerText = " ";
-                btn.disabled = false;
+                return;
             }
-        } catch (err) {
-            alert("     .");
+            
+            localStorage.setItem("ola_id", idInput);
+            OLA_ID = idInput; 
+            
+            btn.innerText = " ";
+            btn.disabled = false;
+
+            await init();
+        } else {
+            alert("  .");
             btn.innerText = " ";
             btn.disabled = false;
         }
-    } else {
-        alert("     .");
+    } catch (err) {
+        console.error(err);
+        alert("    .    GitHub       HTTPS.");
+        btn.innerText = " ";
+        btn.disabled = false;
     }
 }
 
@@ -674,48 +695,50 @@ async function init() {
     
     document.getElementById("login-screen").classList.add("hidden");
 
-    const { data: profile } = await client.from("profiles").select("*").eq("ola_id", OLA_ID).single();
-    if(profile) userProfile = profile;
+    //        ( )     
+    showAdTunnel(async () => {
+        try {
+            const { data: profile } = await client.from("profiles").select("*").eq("ola_id", OLA_ID).single();
+            if(profile) userProfile = profile;
 
-    if (userProfile && userProfile.is_banned) {
-        document.getElementById("app-content").innerHTML = `<div style="text-align:center; padding:60px;"><h2 style="color:var(--danger);">  </h2><button onclick="logoutUser()" class="outline danger" style="margin-top:20px;"> </button></div>`;
-        document.getElementById("app-content").classList.remove("hidden");
-        return;
-    }
+            if (userProfile && userProfile.is_banned) {
+                document.getElementById("app-content").innerHTML = `<div style="text-align:center; padding:60px;"><h2 style="color:var(--danger);">  </h2><button onclick="logoutUser()" class="outline danger" style="margin-top:20px;"> </button></div>`;
+                document.getElementById("app-content").classList.remove("hidden");
+                return;
+            }
 
-    document.getElementById("app-content").classList.remove("hidden");
-    document.getElementById("bottom-nav").classList.remove("hidden");
-    
-    // ----------------------------------------------------
-    //         
-    // ----------------------------------------------------
-    showAdTunnel();
+            document.getElementById("app-content").classList.remove("hidden");
+            document.getElementById("bottom-nav").classList.remove("hidden");
+            switchTab('dhikr');
 
-    switchTab('dhikr');
+            let { data: counts } = await client.from("adhkar_counters").select("*").eq("ola_id", OLA_ID).single();
+            if(!counts) {
+                await client.from("adhkar_counters").insert([{ ola_id: OLA_ID }]);
+                counts = { d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, total_dhikr:0 };
+            }
+            dhikrData = counts;
 
-    let { data: counts } = await client.from("adhkar_counters").select("*").eq("ola_id", OLA_ID).single();
-    if(!counts) {
-        await client.from("adhkar_counters").insert([{ ola_id: OLA_ID }]);
-        counts = { d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, total_dhikr:0 };
-    }
-    dhikrData = counts;
+            const { data: followsData } = await client.from("follows").select("following_ola").eq("follower_ola", OLA_ID);
+            if (followsData) {
+                myFollows = followsData.map(f => f.following_ola);
+            } else {
+                myFollows = [];
+            }
 
-    const { data: followsData } = await client.from("follows").select("following_ola").eq("follower_ola", OLA_ID);
-    if (followsData) {
-        myFollows = followsData.map(f => f.following_ola);
-    } else {
-        myFollows = [];
-    }
-
-    const { data: settings } = await client.from("app_settings").select("*").maybeSingle();
-    
-    renderDhikr(settings?.friday_mode_active);
-    populateSessionDropdown();
-    updateProfileUI();
-    
-    if(!syncInterval) {
-        syncInterval = setInterval(() => syncData(), 5000); 
-    }
+            const { data: settings } = await client.from("app_settings").select("*").maybeSingle();
+            
+            renderDhikr(settings?.friday_mode_active);
+            populateSessionDropdown();
+            updateProfileUI();
+            
+            if(!syncInterval) {
+                syncInterval = setInterval(() => syncData(), 5000); 
+            }
+        } catch (e) {
+            console.error("   :", e);
+            alert("     .");
+        }
+    });
 }
 
 function renderDhikr(isFriday) {
@@ -1178,7 +1201,12 @@ function switchTab(tab) {
     if(tab === 'profile') updateProfileUI();
 }
 
-window.onload = init;
+//         
+window.onload = function() {
+    if(localStorage.getItem("ola_id")) {
+        init();
+    }
+};
 </script>
 </body>
 </html>
